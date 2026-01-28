@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ERD Diagram - Aplikasi Pengaduan Sekolah</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        h1 {
+            text-align: center;
+            color: #2d3748;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        h2 {
+            text-align: center;
+            color: #718096;
+            margin-bottom: 40px;
+            font-weight: 400;
+        }
+
+        .erd-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            margin-top: 40px;
+            justify-items: center;
+        }
+
+        /* Entity/Table Styles */
+        .entity {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            overflow: hidden;
+            width: 100%;
+            max-width: 350px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .entity:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.25);
+        }
+
+        .entity-header {
+            padding: 15px 20px;
+            color: white;
+            font-weight: bold;
+            font-size: 1.3em;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .entity.users .entity-header {
+            background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+        }
+
+        .entity.kategori .entity-header {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+        }
+
+        .entity.pengaduan .entity-header {
+            background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
+        }
+
+        .entity.bukti .entity-header {
+            background: linear-gradient(135deg, #9f7aea 0%, #805ad5 100%);
+        }
+
+        .entity.tanggapan .entity-header {
+            background: linear-gradient(135deg, #fc8181 0%, #f56565 100%);
+        }
+
+        .entity-body {
+            padding: 0;
+        }
+
+        .attribute {
+            padding: 12px 20px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9em;
+        }
+
+        .attribute:last-child {
+            border-bottom: none;
+        }
+
+        .attribute:nth-child(even) {
+            background: #f7fafc;
+        }
+
+        .attribute-name {
+            font-weight: 600;
+            color: #2d3748;
+            flex: 1;
+        }
+
+        .attribute-type {
+            color: #718096;
+            font-size: 0.85em;
+            font-family: 'Courier New', monospace;
+        }
+
+        .badge {
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.75em;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge.pk {
+            background: #fc8181;
+            color: white;
+        }
+
+        .badge.fk {
+            background: #f6ad55;
+            color: white;
+        }
+
+        /* Relationship Section */
+        .relationships {
+            margin-top: 60px;
+            padding: 30px;
+            background: #f7fafc;
+            border-radius: 15px;
+        }
+
+        .relationships h3 {
+            text-align: center;
+            color: #2d3748;
+            margin-bottom: 30px;
+            font-size: 1.8em;
+        }
+
+        .relationship-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+        }
+
+        .relationship {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #4299e1;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .relationship h4 {
+            color: #2d3748;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .relationship p {
+            color: #718096;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+
+        .cardinality {
+            display: inline-block;
+            background: #e2e8f0;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            color: #4a5568;
+            margin-top: 10px;
+        }
+
+        /* Summary Section */
+        .summary {
+            margin-top: 60px;
+            padding: 30px;
+            background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+            border-radius: 15px;
+            color: white;
+        }
+
+        .summary h3 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            text-align: center;
+        }
+
+        .summary-item {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+
+        .summary-item .number {
+            font-size: 3em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .summary-item .label {
+            font-size: 1em;
+            opacity: 0.9;
+        }
+
+        /* SQL Section */
+        .sql-section {
+            margin-top: 60px;
+            padding: 30px;
+            background: #1a202c;
+            border-radius: 15px;
+            color: #e2e8f0;
+        }
+
+        .sql-section h3 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #4299e1;
+            font-size: 1.8em;
+        }
+
+        .sql-code {
+            background: #2d3748;
+            padding: 20px;
+            border-radius: 10px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            line-height: 1.6;
+        }
+
+        .sql-keyword {
+            color: #f6ad55;
+        }
+
+        .sql-type {
+            color: #68d391;
+        }
+
+        .sql-string {
+            color: #fc8181;
+        }
+
+        .sql-comment {
+            color: #718096;
+            font-style: italic;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .erd-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .erd-container {
+                grid-template-columns: 1fr;
+            }
+
+            body {
+                padding: 20px;
+            }
+
+            .container {
+                padding: 20px;
+            }
+        }
+
+        /* Print styles */
+        @media print {
+            body {
+                background: white;
+                padding: 20px;
+            }
+
+            .container {
+                box-shadow: none;
+            }
+
+            .sql-section {
+                background: white;
+                color: #1a202c;
+            }
+
+            .sql-code {
+                background: #f7fafc;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🗄️ ERD Diagram</h1>
+        <h2>Aplikasi Pengaduan Sekolah</h2>
+
+        <!-- Entities -->
+        <div class="erd-container">
+            <!-- Users Table -->
+            <div class="entity users">
+                <div class="entity-header">
+                    👤 users
+                </div>
+                <div class="entity-body">
+                    <div class="attribute">
+                        <span class="badge pk">PK</span>
+                        <span class="attribute-name">user_id</span>
+                        <span class="attribute-type">INT</span>
+                    </div>
+                    <div class="attribute">
+                        <span class="attribute-name">username</span>
+                        <span class="attribute-type">VARCHAR(50)</span>
+                    </div>
+                    <div class="attribute">
+                        <span class="attribute-name">password</span>
+                        <span class="attribute-type">VARCHAR(255)</span>
+                    </div>
+                    <div class="attribute">
+                        <span class="attribute-name">nama</span>
+                        <span class="attribute-type">VARCHAR(100)</span>
+                    </div>
+                    <div class="attribute">
+                        <span class="attribute-name">email</span>
+                        <span class="attribute-type">VARCHAR(100)</span>
+                    </div>
+                    <div class="attribute">
+                        <span class="attribute-name">role</span>
+                        <span class="attribute-type">ENUM</span>
+                    </div>
+                    <div class="attribute">
+                        <span class="attribute-name">created_at</span>
+                        <span class="attribute-type">TIMESTAMP</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kategori Table -->
+            <div class="entity kategori">
+                <div class="entity-header">
+                    📂 kategori
+                </div>
+                <div class="entity-body">
+                    <div class="attribute">
+                        <span class="badge pk">PK</span>
+                        <span class="attribute-name">kategori_id</span>
+                        <span class="attribute-type">INT</span>
+                    </div>
+                    <div class="attribute">
+                        <span class="attribute-name">nama_kategori</span>
+                        <span class="attribute-type">VARCHAR(50)</span>
+                    </div>
+                    <div class="attribute">
+                        <span class="attribute-name">deskripsi</span>
+                        <span class="attribute-type">TEXT</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pengaduan Table -->
+            <div class="entity pengaduan">
+                <div class="entity-header">
+                    📝 pengaduan
+                </div>
+                <div class="entity-body">
+                    <div class="attribute">
+                        <span class="badge pk">PK</span>
+                        <span class="attribute-name">pengaduan_id</span>
+                        <span class="attribute-type">INT</span>
+                    </div>
+                    <div class="attribute">
+                        <span class="badge fk">FK</span>
+                        <span class="attribute-name">user_id</span>
+                        <span class="attribute-type">INT</span>
+                    </div>
+                    <div class="attribute">
+                        <span class="badge fk">FK</span>
+                        <span class="attribute-name">kategori_id</span>
+                        <span class="attribute-type">INT</span>
+                    </div>
+                    <div class="attribute">
+                        <span class="attribute-name">judul</span>
+                        <span class="attribute-type">VARCHAR(200)</span>
+                    </div>
+                    <div class="attribute">
+                        <span class="attribute-name">deskripsi</span>
+                        <span class="attribute-type">TEXT</span>
+                    </div>
+                    <div class="attribute">
+                        <span class="attribute-name">status</span>
+                        <span class="attribute-type">ENUM</span>
+                    </div>
+                    <div class="attribute">
+                        <span class="attribute-name">prioritas</span>
+                        <span class="attribute-type">ENUM</span>
+                    </div>
+                    <div class="attribute">
+                        <span class="attribute-name">created_at</span>
+                        <span class="attribute-type">TIMESTAMP</span>
+                    </div>
+                    <div class="attribute">
+                        <span class="attribute-name">updated_at</span>
+                        <span class="attribute-type">TIMESTAMP</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bukti Table -->
+            <div class="entity bukti">
+                <div class="entity-header">
+                    📎 bukti
+                </div>
+                <div class="entity-body">
+                    <div class="attribute">
+                        <span class="badge pk">PK</span>
+                        <span class="attribute-name">bukti_id</span>
+                        <span class="attribute-type">INT</span>
+                    </div>
+                    <div class="attribute">
+                        <span class="badge fk">FK</span>
+                        <span class="attribute-name">pengaduan_id</span>
+                        <span class="attribute-type">INT</span>
+                    </div>
+                    <div class="attribute">
+                        <span class="attribute-name">file_path</span>
+                        <span class="attribute-type">VARCHAR(255)</span>
+                    </div>
+                    <div class="attribute">
+                        <span class="attribute-name">file_name</span>
+                        <span class="attribute-type">VARCHAR(100)</span>
+                    </div>
+                    <div class="attribute">
+                        <span class="attribute-name">file_size</span>
+                        <span class="attribute-type">INT</span>
+                    </div>
+                    <div class="attribute">
+                        <span class="attribute-name">uploaded_at</span>
+                        <span class="attribute-type">TIMESTAMP</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tanggapan Table -->
+            <div class="entity tanggapan">
+                <div class="entity-header">
+                    💬 tanggapan
+                </div>
+                <div class="entity-body">
+                    <div class="attribute">
+                        <span class="badge pk">PK</span>
+                        <span class="attribute-name">tanggapan_id</span>
+                        <span class="attribute-type">INT</span>
+                    </div>
+                    <div class="attribute">
+                        <span class="badge fk">FK</span>
+                        <span class="attribute-name">pengaduan_id</span>
+                        <span class="attribute-type">INT</span>
+                    </div>
+                    <div class="attribute">
+                        <span class="badge fk">FK</span>
+                        <span class="attribute-name">admin_id</span>
+                        <span class="attribute-type">INT</span>
+                    </div>
+                    <div class="attribute">
+                        <span class="attribute-name">isi_tanggapan</span>
+                        <span class="attribute-type">TEXT</span>
+                    </div>
+                    <div class="attribute">
+                        <span class="attribute-name">created_at</span>
+                        <span class="attribute-type">TIMESTAMP</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Relationships -->
+        <div class="relationships">
+            <h3>🔗 Hubungan Antar Tabel</h3>
+            <div class="relationship-grid">
+                <div class="relationship">
+                    <h4>1️⃣ users → pengaduan</h4>
+                    <p>Satu user dapat membuat banyak pengaduan. Setiap pengaduan hanya dimiliki oleh satu user.</p>
+                    <div class="cardinality">One-to-Many (1:N)</div>
+                </div>
+
+                <div class="relationship">
+                    <h4>2️⃣ kategori → pengaduan</h4>
+                    <p>Satu kategori dapat memiliki banyak pengaduan. Setiap pengaduan hanya termasuk dalam satu kategori.</p>
+                    <div class="cardinality">One-to-Many (1:N)</div>
+                </div>
+
+                <div class="relationship">
+                    <h4>3️⃣ pengaduan → bukti</h4>
+                    <p>Satu pengaduan dapat memiliki banyak bukti (foto/dokumen). Setiap bukti hanya milik satu pengaduan.</p>
+                    <div class="cardinality">One-to-Many (1:N)</div>
+                </div>
+
+                <div class="relationship">
+                    <h4>4️⃣ pengaduan → tanggapan</h4>
+                    <p>Satu pengaduan dapat memiliki banyak tanggapan dari admin. Setiap tanggapan hanya terkait dengan satu pengaduan.</p>
+                    <div class="cardinality">One-to-Many (1:N)</div>
+                </div>
+
+                <div class="relationship">
+                    <h4>5️⃣ users (admin) → tanggapan</h4>
+                    <p>Satu admin dapat memberikan banyak tanggapan. Setiap tanggapan hanya diberikan oleh satu admin.</p>
+                    <div class="cardinality">One-to-Many (1:N)</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Summary -->
+        <div class="summary">
+            <h3>📊 Ringkasan Database</h3>
+            <div class="summary-grid">
+                <div class="summary-item">
+                    <div class="number">5</div>
+                    <div class="label">Tabel</div>
+                </div>
+                <div class="summary-item">
+                    <div class="number">27</div>
+                    <div class="label">Kolom</div>
+                </div>
+                <div class="summary-item">
+                    <div class="number">5</div>
+                    <div class="label">Primary Keys</div>
+                </div>
+                <div class="summary-item">
+                    <div class="number">5</div>
+                    <div class="label">Foreign Keys</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SQL Code -->
+        <div class="sql-section">
+            <h3>💻 SQL Schema (Untuk phpMyAdmin)</h3>
+            <div class="sql-code">
+                <span class="sql-comment">-- Buat database</span><br>
+                <span class="sql-keyword">CREATE DATABASE</span> db_pengaduan_sekolah;<br>
+                <span class="sql-keyword">USE</span> db_pengaduan_sekolah;<br><br>
+
+                <span class="sql-comment">-- Tabel users</span><br>
+                <span class="sql-keyword">CREATE TABLE</span> users (<br>
+                &nbsp;&nbsp;user_id <span class="sql-type">INT</span> AUTO_INCREMENT PRIMARY KEY,<br>
+                &nbsp;&nbsp;username <span class="sql-type">VARCHAR(50)</span> NOT NULL,<br>
+                &nbsp;&nbsp;password <span class="sql-type">VARCHAR(255)</span> NOT NULL,<br>
+                &nbsp;&nbsp;nama <span class="sql-type">VARCHAR(100)</span> NOT NULL,<br>
+                &nbsp;&nbsp;email <span class="sql-type">VARCHAR(100)</span>,<br>
+                &nbsp;&nbsp;role <span class="sql-type">ENUM</span>('admin','siswa','guru','staff') DEFAULT 'siswa',<br>
+                &nbsp;&nbsp;created_at <span class="sql-type">TIMESTAMP</span> DEFAULT CURRENT_TIMESTAMP<br>
+                );<br><br>
+
+                <span class="sql-comment">-- Tabel kategori</span><br>
+                <span class="sql-keyword">CREATE TABLE</span> kategori (<br>
+                &nbsp;&nbsp;kategori_id <span class="sql-type">INT</span> AUTO_INCREMENT PRIMARY KEY,<br>
+                &nbsp;&nbsp;nama_kategori <span class="sql-type">VARCHAR(50)</span> NOT NULL,<br>
+                &nbsp;&nbsp;deskripsi <span class="sql-type">TEXT</span><br>
+                );<br><br>
+
+                <span class="sql-comment">-- Tabel pengaduan</span><br>
+                <span class="sql-keyword">CREATE TABLE</span> pengaduan (<br>
+                &nbsp;&nbsp;pengaduan_id <span class="sql-type">INT</span> AUTO_INCREMENT PRIMARY KEY,<br>
+                &nbsp;&nbsp;user_id <span class="sql-type">INT</span> NOT NULL,<br>
+                &nbsp;&nbsp;kategori_id <span class="sql-type">INT</span> NOT NULL,<br>
+                &nbsp;&nbsp;judul <span class="sql-type">VARCHAR(200)</span> NOT NULL,<br>
+                &nbsp;&nbsp;deskripsi <span class="sql-type">TEXT</span> NOT NULL,<br>
+                &nbsp;&nbsp;status <span class="sql-type">ENUM</span>('pending','diproses','selesai','ditolak') DEFAULT 'pending',<br>
+                &nbsp;&nbsp;prioritas <span class="sql-type">ENUM</span>('rendah','sedang','tinggi') DEFAULT 'sedang',<br>
+                &nbsp;&nbsp;created_at <span class="sql-type">TIMESTAMP</span> DEFAULT CURRENT_TIMESTAMP,<br>
+                &nbsp;&nbsp;updated_at <span class="sql-type">TIMESTAMP</span> DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,<br>
+                &nbsp;&nbsp;<span class="sql-keyword">FOREIGN KEY</span> (user_id) <span class="sql-keyword">REFERENCES</span> users(user_id),<br>
+                &nbsp;&nbsp;<span class="sql-keyword">FOREIGN KEY</span> (kategori_id) <span class="sql-keyword">REFERENCES</span> kategori(kategori_id)<br>
+                );<br><br>
+
+                <span class="sql-comment">-- Tabel bukti</span><br>
+                <span class="sql-keyword">CREATE TABLE</span> bukti (<br>
+                &nbsp;&nbsp;bukti_id <span class="sql-type">INT</span> AUTO_INCREMENT PRIMARY KEY,<br>
+                &nbsp;&nbsp;pengaduan_id <span class="sql-type">INT</span> NOT NULL,<br>
+                &nbsp;&nbsp;file_path <span class="sql-type">VARCHAR(255)</span> NOT NULL,<br>
+                &nbsp;&nbsp;file_name <span class="sql-type">VARCHAR(100)</span> NOT NULL,<br>
+                &nbsp;&nbsp;file_size <span class="sql-type">INT</span>,<br>
+                &nbsp;&nbsp;uploaded_at <span class="sql-type">TIMESTAMP</span> DEFAULT CURRENT_TIMESTAMP,<br>
+                &nbsp;&nbsp;<span class="sql-keyword">FOREIGN KEY</span> (pengaduan_id) <span class="sql-keyword">REFERENCES</span> pengaduan(pengaduan_id)<br>
+                );<br><br>
+
+                <span class="sql-comment">-- Tabel tanggapan</span><br>
+                <span class="sql-keyword">CREATE TABLE</span> tanggapan (<br>
+                &nbsp;&nbsp;tanggapan_id <span class="sql-type">INT</span> AUTO_INCREMENT PRIMARY KEY,<br>
+                &nbsp;&nbsp;pengaduan_id <span class="sql-type">INT</span> NOT NULL,<br>
+                &nbsp;&nbsp;admin_id <span class="sql-type">INT</span> NOT NULL,<br>
+                &nbsp;&nbsp;isi_tanggapan <span class="sql-type">TEXT</span> NOT NULL,<br>
+                &nbsp;&nbsp;created_at <span class="sql-type">TIMESTAMP</span> DEFAULT CURRENT_TIMESTAMP,<br>
+                &nbsp;&nbsp;<span class="sql-keyword">FOREIGN KEY</span> (pengaduan_id) <span class="sql-keyword">REFERENCES</span> pengaduan(pengaduan_id),<br>
+                &nbsp;&nbsp;<span class="sql-keyword">FOREIGN KEY</span> (admin_id) <span class="sql-keyword">REFERENCES</span> users(user_id)<br>
+                );<br><br>
+
+                <span class="sql-comment">-- Insert data kategori awal</span><br>
+                <span class="sql-keyword">INSERT INTO</span> kategori (nama_kategori, deskripsi) <span class="sql-keyword">VALUES</span><br>
+                (<span class="sql-string">'Fasilitas'</span>, <span class="sql-string">'Kerusakan atau masalah fasilitas sekolah'</span>),<br>
+                (<span class="sql-string">'Lingkungan'</span>, <span class="sql-string">'Masalah kebersihan dan keamanan lingkungan'</span>),<br>
+                (<span class="sql-string">'Kegiatan KBM'</span>, <span class="sql-string">'Masalah terkait kegiatan belajar mengajar'</span>),<br>
+                (<span class="sql-string">'Sosial'</span>, <span class="sql-string">'Masalah sosial dan konflik'</span>);
+            </div>
+        </div>
+
+        <!-- Footer Note -->
+        <div style="text-align: center; margin-top: 30px; color: #718096; font-style: italic;">
+            💡 Tip: Tekan Ctrl+P (Windows) atau Cmd+P (Mac) untuk print atau simpan sebagai PDF
+        </div>
+    </div>
+</body>
+</html>
